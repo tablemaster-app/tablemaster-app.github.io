@@ -3,18 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>枱主</title>
+<title>枱主 — 直播</title>
 <style>
   body { margin: 0; font-family: -apple-system, 'Noto Sans TC', sans-serif; background: #6b5c3e; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
-  h1 { font-size: 28px; font-weight: 900; }
-  p { opacity: 0.8; }
+  .card { background: rgba(255,255,255,0.12); border-radius: 20px; padding: 32px 28px; max-width: 360px; width: 100%; }
+  .logo { font-size: 48px; margin-bottom: 12px; }
+  h1 { font-size: 22px; font-weight: 900; margin: 0 0 8px; }
+  .code { font-size: 52px; font-weight: 900; letter-spacing: 10px; color: #f5e9cc; margin: 20px 0; }
+  p { font-size: 14px; opacity: 0.8; line-height: 1.6; margin: 0 0 20px; }
+  .btn { display: block; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; margin-bottom: 10px; cursor: pointer; border: none; width: 100%; box-sizing: border-box; }
+  .btn-primary { background: #f5e9cc; color: #6b5c3e; }
+  .btn-store { background: rgba(255,255,255,0.2); color: #fff; }
+  .status { font-size: 13px; opacity: 0.7; margin-top: 16px; }
 </style>
 </head>
 <body>
-<div>
-  <div style="font-size:64px">🀄</div>
+<div class="card">
+  <div class="logo">🀄</div>
   <h1>枱主</h1>
-  <p>香港麻雀計分 App</p>
+  <p>你被邀請觀看直播麻雀</p>
+  <div class="code" id="code-display">----</div>
+  <p id="status-msg">正在嘗試開啟 App...</p>
+  <a id="btn-open" class="btn btn-primary" href="#">開啟枱主 App</a>
+  <div id="store-btns" style="display:none">
+    <a id="btn-ios" class="btn btn-store" href="https://apps.apple.com/app/tablemaster" style="display:none">📱 從 App Store 下載</a>
+    <a id="btn-android" class="btn btn-store" href="https://play.google.com/store/apps/details?id=com.tablemaster.app" style="display:none">📱 從 Google Play 下載</a>
+  </div>
+  <div class="status">如已安裝 App，請手動輸入以上代碼</div>
 </div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code') || '';
+  document.getElementById('code-display').textContent = code || '----';
+
+  const deepLink = 'tablemaster://watch/' + code;
+  document.getElementById('btn-open').href = deepLink;
+
+  const ua = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isAndroid = /android/.test(ua);
+
+  if (code) {
+    // Attempt to open app
+    window.location.href = deepLink;
+
+    // After timeout, show store links if app didn't open
+    setTimeout(function() {
+      document.getElementById('status-msg').textContent = '未能開啟 App？請先下載枱主';
+      document.getElementById('store-btns').style.display = 'block';
+      if (isIOS) document.getElementById('btn-ios').style.display = 'block';
+      else if (isAndroid) document.getElementById('btn-android').style.display = 'block';
+      else {
+        document.getElementById('btn-ios').style.display = 'block';
+        document.getElementById('btn-android').style.display = 'block';
+      }
+    }, 2000);
+  } else {
+    document.getElementById('status-msg').textContent = '連結無效，請向發送者索取代碼';
+    document.getElementById('btn-open').style.display = 'none';
+  }
+</script>
 </body>
 </html>
